@@ -28,8 +28,7 @@ jobs:
 
       - name: Correr tests con coverage
         run: |
-          dotnet test --no-restore --collect:"XPlat Code Coverage" \
-          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile="/Migrations/*;/JSONExporter/;**/PharmaGo.Factory/"
+          dotnet test --no-restore --collect:"XPlat Code Coverage" 
 
       - name: Convertir coverage a html
         uses: danielpalme/ReportGenerator-GitHub-Action@5.1.26
