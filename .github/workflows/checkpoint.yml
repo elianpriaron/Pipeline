@@ -37,6 +37,7 @@ jobs:
           reports: app/code/backend/TestResults/**/coverage.cobertura.xml
           targetdir: coverage-report
           reporttypes: HtmlInline_AzurePipelines;Cobertura
+          filefilters: "-*Migrations*;-*JSONExporter*;-*PharmaGo.Factory*"
 
       - name: Enviar reporte por mail
         uses: dawidd6/action-send-mail@v3
