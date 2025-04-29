@@ -1,0 +1,25 @@
+name: CD Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy de la aplicacion via SSH
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del codigo
+        uses: actions/checkout@v3
+
+      - name: Conexion por SSH al servidor y deploy
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /obligatorio-m7b-blanco-priaron-roig/
+            git pull origin main
+            docker-compose down
+            docker-compose up -d --build

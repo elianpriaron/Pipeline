@@ -1,0 +1,55 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend:
+    name: Build del Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/code/frontend
+
+    steps:
+      - name: Checkout del codigo
+        uses: actions/checkout@v3
+
+      - name: Set up de Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Instalacion de dependencias
+        run: npm ci
+
+      - name: Compilar frontend en Angular
+        run: npm run build
+
+  backend:
+    name: Build del Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/code/backend
+
+    steps:
+      - name: Checkout del codigo
+        uses: actions/checkout@v3
+
+      - name: Set up de .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore de las dependencias
+        run: dotnet restore
+
+      - name: Compilar backend en .NET
+        run: dotnet build --configuration Release
+
+      - name: Correr pruebas unitarias
+        run: dotnet test --no-restore --verbosity normal

@@ -1,0 +1,56 @@
+name: Checkpoint Develop
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  test-and-coverage:
+    name: Test y Coverage
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/code/backend
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Set up de .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore de dependencias
+        run: dotnet restore
+
+      - name: Correr tests con coverage
+        run: |
+          dotnet test --no-restore --collect:"XPlat Code Coverage" \
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile="/Migrations/*;/JSONExporter/;**/PharmaGo.Factory/"
+
+      - name: Convertir coverage a html
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.26
+        with:
+          reports: app/code/backend/TestResults/**/coverage.cobertura.xml
+          targetdir: coverage-report
+          reporttypes: HtmlInline_AzurePipelines;Cobertura
+
+      - name: Enviar reporte por mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.vera.com.uy
+          server_port: 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: Coverage Report - Develop Branch
+          to: elianpriaron@gmail.com,gaston.roigf@gmail.com,santiagoblancovarela@gmail.com
+          from: blanco_priaron_roig@vera.com.uy <blanco_priaron_roig@vera.com.uy>
+          content_type: text/html
+          body: |
+            .: REPORTE DE COVERAGE :.
+            Se adjunta el último reporte de coverage para la rama develop.
+            Mensaje generado automáticamente.
+          attachments: coverage-report/index.html
