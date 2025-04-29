@@ -28,12 +28,13 @@ jobs:
 
       - name: Correr tests con coverage
         run: |
-          dotnet test --no-restore --collect:"XPlat Code Coverage" 
+            dotnet test --no-restore /p:CollectCoverage=true /p:CoverletOutput=./coverage/ /p:CoverletOutputFormat=cobertura
+
 
       - name: Convertir coverage a html
         uses: danielpalme/ReportGenerator-GitHub-Action@5.1.26
         with:
-          reports: app/code/backend/TestResults/**/coverage.cobertura.xml
+          reports: app/code/backend/coverage/coverage.cobertura.xml
           targetdir: coverage-report
           reporttypes: HtmlInline_AzurePipelines;Cobertura
 
